@@ -25,6 +25,10 @@ class LinkedListTest < MiniTest::Test
   end
 
   def test_values
+    y = %w(1 2)
+    x = LinkedList.new(y)
+    assert x.values, y
+
     y = %w(12 13 15 44 52 67 89)
     x = LinkedList.new(y)
     assert x.values, y
@@ -32,7 +36,24 @@ class LinkedListTest < MiniTest::Test
 
   def test_reverse
     x = LinkedList.new()
-    assert_equal x.reverse!.values, []
+    assert_equal [], x.reverse.values
+
+    y = %w(1)
+    x = LinkedList.new(y)
+    assert_equal y, x.reverse.values
+
+    y = %w(1 2)
+    x = LinkedList.new(y)
+    assert_equal y.reverse, x.reverse.values
+
+    y = %w(12 13 15 44 52 67 89)
+    x = LinkedList.new(y)
+    assert_equal y.reverse, x.reverse.values
+  end
+
+  def test_reverse_bang
+    x = LinkedList.new()
+    assert_equal [], x.reverse!.values
 
     y = %w(1)
     x = LinkedList.new(y)
@@ -40,10 +61,42 @@ class LinkedListTest < MiniTest::Test
 
     y = %w(1 2)
     x = LinkedList.new(y)
-    assert_equal y, x.reverse!.values
+    assert_equal y.reverse, x.reverse!.values
 
     y = %w(12 13 15 44 52 67 89)
     x = LinkedList.new(y)
-    assert_equal x.reverse!.values, y.reverse
+    assert_equal y.reverse, x.reverse!.values
+  end
+
+  def test_reverse_recursive_bang
+    x = LinkedList.new()
+    assert_equal [], x.reverse_recursive!.values
+
+    y = %w(1)
+    x = LinkedList.new(y)
+    assert_equal y, x.reverse_recursive!.values
+
+    y = %w(1 2)
+    x = LinkedList.new(y)
+    assert_equal y.reverse, x.reverse_recursive!.values
+
+    y = %w(12 13 15 44 52 67 89)
+    x = LinkedList.new(y)
+    assert_equal y.reverse, x.reverse_recursive!.values
+  end
+
+  def test_include?
+    y = %w(12 13 15 44 52 67 89)
+    x = LinkedList.new(y)
+    assert_raises(ArgumentError) { x.include?(LinkedList.new(%w(2 3))) }
+    assert x.include?(12)
+    assert x.include?(52)
+    refute x.include?(99)
+  end
+
+  def test_sort
+    y = %w(12 13 15 51 44 67 89)
+    x = LinkedList.new(y)
+    assert_equal y.sort, x.sort.values
   end
 end
