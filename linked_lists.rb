@@ -11,6 +11,7 @@ class LinkedList
   attr_accessor :head
 
   def initialize(elements=nil)
+    raise ArgumentError, 'Argument does not respond to each.' unless elements.respond_to?(:each) || elements.nil?
     @head = nil
     elements.each {|value| add(value.to_i)} if elements
   end
@@ -21,6 +22,7 @@ class LinkedList
     else
       @head = Node.new(value.to_i)
     end
+    self
   end
 
   def values(start_node=@head)
@@ -35,10 +37,17 @@ class LinkedList
   #Standard ruby-esque method that returns a new object that
   # is the reversed list without altering the original object
   def reverse(current_node=@head)
-    LinkedList.new(values(current_node).reverse)
+    LinkedList.new(values.reverse)
   end
 
+  #Aliased to preferred reverse! method implementation
   def reverse!(current_node=@head)
+    reverse_recursive!(current_node)
+  end
+
+  #Experimental implementation that shouldn't be used if you desire
+  #computational efficiency
+  def reverse_stacked!(current_node=@head)
     return self if current_node.nil?
     reverser = Array.new
     @head = nil
@@ -58,10 +67,11 @@ class LinkedList
     self
   end
 
+  #Current preferred implementation to reverse the list
   def reverse_recursive!(current_node=@head)
     return self if current_node.nil?
     last_node = current_node
-    rev_rec(current_node)
+    rev_rec!(current_node)
     last_node.next = nil
     self
   end
@@ -85,15 +95,44 @@ class LinkedList
     LinkedList.new(values.sort)
   end
 
+  #This method returns a new LinkedList that does not contain
+  #the referenced node.  The original LinkedList is NOT altered.
+  #Head node is node 0
+  def remove(node_number)
+    vals = values
+    vals.slice!(node_number)
+    LinkedList.new(vals)
+  end
+
+  #This method alters the original LInkedList and returns the value
+  #removed from the linked list.
+  #Head node is node 0
+  def remove!(node_number)
+    if node_number == 0
+      value = @head.value
+      @head = @head.next
+      value
+    else
+      current_node = @head
+      parent_node = nil
+      node_number.times do
+        parent_node = current_node
+        current_node = current_node.next
+      end
+      parent_node.next = current_node.next
+      current_node.value
+    end
+  end
+
   private
   # This method performs the guts of a recursive reverse function
   # it is used by the reverse_recursive! method
-  def rev_rec(current_node=@head)
+  def rev_rec!(current_node=@head)
     if current_node.next.nil?
       @head = current_node
       current_node
     else
-      rev_rec(current_node.next).next = current_node
+      rev_rec!(current_node.next).next = current_node
     end
   end
 

@@ -1,13 +1,13 @@
 require 'minitest/autorun'
+require 'ruby-prof'
 require_relative 'linked_lists'
 
 class LinkedListTest < MiniTest::Test
   def test_init
-    x = LinkedList.new
-    assert x
-
-    x = LinkedList.new(%w(12 13 15 44 52 67 89))
-    assert x
+    assert LinkedList.new
+    assert LinkedList.new(%w(12 13 15 44 52 67 89))
+    assert_raises(ArgumentError) { LinkedList.new(3)}
+    assert LinkedList.new([3])
   end
 
   def test_add
@@ -38,55 +38,55 @@ class LinkedListTest < MiniTest::Test
     x = LinkedList.new()
     assert_equal [], x.reverse.values
 
-    y = %w(1)
+    y = [1]
     x = LinkedList.new(y)
     assert_equal y, x.reverse.values
 
-    y = %w(1 2)
+    y = [1,2]
     x = LinkedList.new(y)
     assert_equal y.reverse, x.reverse.values
 
-    y = %w(12 13 15 44 52 67 89)
+    y = [12,13,15,44,52,67,89]
     x = LinkedList.new(y)
     assert_equal y.reverse, x.reverse.values
   end
 
-  def test_reverse_bang
+  def test_reverse_stacked_bang
     x = LinkedList.new()
-    assert_equal [], x.reverse!.values
+    assert_equal [], x.reverse_stacked!.values
 
-    y = %w(1)
+    y = [1]
     x = LinkedList.new(y)
-    assert_equal y, x.reverse!.values
+    assert_equal y, x.reverse_stacked!.values
 
-    y = %w(1 2)
+    y = [1,2]
     x = LinkedList.new(y)
-    assert_equal y.reverse, x.reverse!.values
+    assert_equal y.reverse, x.reverse_stacked!.values
 
-    y = %w(12 13 15 44 52 67 89)
+    y = [12,13,15,44,52,67,89]
     x = LinkedList.new(y)
-    assert_equal y.reverse, x.reverse!.values
+    assert_equal y.reverse, x.reverse_stacked!.values
   end
 
   def test_reverse_recursive_bang
     x = LinkedList.new()
     assert_equal [], x.reverse_recursive!.values
 
-    y = %w(1)
+    y = [1]
     x = LinkedList.new(y)
     assert_equal y, x.reverse_recursive!.values
 
-    y = %w(1 2)
+    y = [1,2]
     x = LinkedList.new(y)
     assert_equal y.reverse, x.reverse_recursive!.values
 
-    y = %w(12 13 15 44 52 67 89)
+    y = [12,13,15,44,52,67,89]
     x = LinkedList.new(y)
     assert_equal y.reverse, x.reverse_recursive!.values
   end
 
   def test_include?
-    y = %w(12 13 15 44 52 67 89)
+    y = [12,13,15,44,52,67,89]
     x = LinkedList.new(y)
     assert_raises(ArgumentError) { x.include?(LinkedList.new(%w(2 3))) }
     assert x.include?(12)
@@ -95,8 +95,41 @@ class LinkedListTest < MiniTest::Test
   end
 
   def test_sort
-    y = %w(12 13 15 51 44 67 89)
+    y = [12,13,15,44,52,67,89]
     x = LinkedList.new(y)
     assert_equal y.sort, x.sort.values
+    assert_equal y, x.values
   end
+
+  def test_remove
+    y = [12,13,15,44,52,67,89]
+    x = LinkedList.new(y)
+    assert_equal [12,13,44,52,67,89], x.remove(2).values
+    assert_equal y, x.values
+  end
+
+  def test_remove_bang
+    y = [12,13,15,44,52,67,89]
+    x = LinkedList.new(y)
+    assert_equal 15, x.remove!(2)
+    refute x.include?(15)
+    assert_equal [12,13,44,52,67,89], x.values
+    assert_equal 12, x.remove!(0)
+    refute x.include?(12)
+    assert_equal [13,44,52,67,89], x.values
+  end
+
+  #uncomment to run profiling
+  #def test_ruby_prof_profiling
+  #  y = (1 .. 999)
+  #  x = LinkedList.new(y)
+  #  RubyProf.start
+  #  30.times do
+  #    x.reverse_stacked!
+  #    x.reverse_recursive!
+  #  end
+  #  result = RubyProf.stop
+  #  printer = RubyProf::MultiPrinter.new(result)
+  #  printer.print(:path => ".", :profile => "profile")
+  #end
 end

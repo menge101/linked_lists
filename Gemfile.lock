@@ -3,6 +3,7 @@ GEM
   specs:
     minitest (5.4.3)
     rake (10.3.2)
+    ruby-prof (0.15.3)
 
 PLATFORMS
   ruby
@@ -10,3 +11,4 @@ PLATFORMS
 DEPENDENCIES
   minitest
   rake
+  ruby-prof
