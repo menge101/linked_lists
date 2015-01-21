@@ -36,7 +36,7 @@ class LinkedList
 
   #Standard ruby-esque method that returns a new object that
   # is the reversed list without altering the original object
-  def reverse(current_node=@head)
+  def reverse
     LinkedList.new(values.reverse)
   end
 
@@ -47,7 +47,8 @@ class LinkedList
 
   #Experimental implementation that shouldn't be used if you desire
   #computational efficiency
-  def reverse_stacked!(current_node=@head)
+  def reverse_stacked!
+    current_node=@head
     return self if current_node.nil?
     reverser = Array.new
     @head = nil
@@ -68,10 +69,10 @@ class LinkedList
   end
 
   #Current preferred implementation to reverse the list
-  def reverse_recursive!(current_node=@head)
-    return self if current_node.nil?
-    last_node = current_node
-    rev_rec!(current_node)
+  def reverse_recursive!
+    return self if @head.nil?
+    last_node = @head
+    rev_rec!(@head)
     last_node.next = nil
     self
   end
